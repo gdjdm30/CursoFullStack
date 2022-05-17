@@ -52,7 +52,7 @@ async function getData() {
 
     } catch (error) {
         console.log({error});
-        $('.alert').show();       
+        $('.alert-danger').show();       
     }
 }
 
@@ -69,7 +69,7 @@ async function getData() {
 //                 }
 //         } catch (error) {
 //             console.log({error});
-//             $('.alert').show();
+//             $('.alert-danger').show();
 //         }
 //     }  
 // }
@@ -102,29 +102,35 @@ async function sendData(event){
             HC: conHC.value,
             diagnostic: conDiag.value,
         };
-        let method = "POST";
-        let urlAux = `${url}/${entity}`;
-        const action = saveBtn.innerText;
-        if(action === "Editar"){
-            method = "PUT";
-            consults[indexAux.value] = data;
-            urlAux += `/${indexAux.value}`;
-        }
 
-        const response = await fetch(urlAux, {
-            method,
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(data),
-        });
-        if (response.ok) {
-            getData();
-            resetModalForm();
+        if(dataValidation(data) === true){
+
+            let method = "POST";
+            let urlAux = `${url}/${entity}`;
+            const action = saveBtn.innerText;
+            if(action === "Editar"){
+                method = "PUT";
+                consults[indexAux.value] = data;
+                urlAux += `/${indexAux.value}`;
+            }
+
+            const response = await fetch(urlAux, {
+                method,
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+            });
+            if (response.ok) {
+                getData();
+                resetModalForm();
+            }
+            return;
         }
+        $('.alert-warning').show();
     } catch (error) {
         console.log({error});
-        $('.alert').show();
+        $('.alert-danger').show();
     }
 }
 
@@ -158,7 +164,7 @@ async function getPetsData() {
         }
     } catch (error) {
         console.log({error});
-        $('.alert').show();       
+        $('.alert-danger').show();       
     }
 }
 
@@ -181,8 +187,19 @@ async function getVetsData() {
             }
     } catch (error) {
         console.log({error});
-        $('.alert').show();       
+        $('.alert-danger').show();       
     }
+}
+
+function dataValidation(data) {
+    if (typeof data !== 'object') 
+        return false;
+    
+    for(let key in data){
+        if(data[key].length === 0) 
+            return false;
+    }
+    return true;
 }
 
 getData();
